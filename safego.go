@@ -5,7 +5,26 @@ import (
 	"log"
 )
 
-// GoFunc executes the provided function fn in a goroutine with safety features.
+// Go executes the provided function fn in a goroutine with safety features.
+// It provides the following safety mechanisms:
+//
+//	`Panic recovery` to prevent application crashes
+//	`Parameters`:
+//	    'fn': The function to be executed in the goroutine
+//
+// Any panics during execution will be recovered and logged.
+func Go(fn func()) {
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("Recovered from panic: %v", r)
+			}
+		}()
+		fn()
+	}()
+}
+
+// GoContext executes the provided function fn in a goroutine with safety features.
 // It provides the following safety mechanisms:
 //
 //	`Panic recovery` to prevent application crashes
@@ -16,7 +35,7 @@ import (
 //
 // The function will not execute if the context is already canceled.
 // Any panics during execution will be recovered and logged.
-func GoFunc(ctx context.Context, fn func()) {
+func GoContext(ctx context.Context, fn func()) {
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
